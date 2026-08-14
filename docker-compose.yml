@@ -1,0 +1,13 @@
+# Deploy compose — runs on Hurska (192.168.4.33, Pi arm64) at /data/twobots.
+# The TwoBots Apps landing page, Ayula-fronted: twobots → https://twobots.dev  (:8098)
+#
+# Hurska's static-site ports:
+#   8090 sleuth · 8091 sloth · 8092 basar · 8093 minified · 8094 basar-cv
+#   8095 family-map · 8096 diana-cv · 8097 mrs-peopsquik · 8098 twobots
+services:
+  twobots:
+    image: 192.168.4.9:5000/twobots:latest
+    container_name: twobots
+    ports:
+      - "8098:80"
+    restart: unless-stopped

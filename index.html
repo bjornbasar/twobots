@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en-NZ">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TwoBots Apps — small games from Aotearoa New Zealand</title>
+<meta name="description" content="TwoBots Apps — small games made in Aotearoa New Zealand. First up: Tongits TwoBots, three-player Tongits against two bots. In development.">
+<link rel="canonical" href="https://twobots.dev/">
+<meta name="color-scheme" content="light dark">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TwoBots Apps">
+<meta property="og:title" content="TwoBots Apps — small games from Aotearoa New Zealand">
+<meta property="og:description" content="First up: Tongits TwoBots — three-player Tongits against two bots. Offline, no accounts, no ads. In development.">
+<meta property="og:url" content="https://twobots.dev/">
+<meta property="og:locale" content="en_NZ">
+<meta name="twitter:card" content="summary">
+<!--
+  No og:image yet: it would have to be either the bare mark (which a link preview renders
+  badly) or a mock-up of a UI that does not exist. Add one from a real screenshot once
+  there is a playable build.
+-->
+
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/fonts.css?v=95fc7a2e">
+<!--
+  ?v= is a CACHE BUSTER, not decoration. /assets/ is served max-age=2592000, so editing
+  fonts.css does NOT reach clients or Cloudflare for 30 days — only a new URL does. BUMP
+  IT whenever fonts.css changes; ci/deploy.sh fails the deploy if it is stale.
+
+  The url()s inside fonts.css are stylesheet-relative (`fonts/…`), NOT document-relative.
+  A linked stylesheet resolves url() against itself, so `assets/fonts/…` would resolve to
+  /assets/assets/fonts/… and 404 — the bug diana-cv shipped with for months.
+-->
+<style>
+  /* ---------------------------------------------------------------------------
+     Palette — Izzet (U/R), the fifth public domain. Blue for the bots, red for
+     play; Izzet is also MTG's invention guild, which suits a hand-rolled engine.
+
+     THE R SKEWS ORANGE, NOT GOLD, on purpose. The estate's palette rule already
+     assigns gold/yellow as the stand-in for MTG white — that is how Orzhov works
+     on peopsquik.com (gold tile #BF9311). A gold-leaning amber here would read as
+     W and quietly make this Azorius. #D06B22 reads unambiguously as R, and is far
+     enough from basar.co.nz's terracotta #C63F2A in hue to stay distinct.
+
+     Split by job, same as mrs.peopsquik.com and for the same reason — measured
+     against the cream ground, the warm half cannot carry text:
+       steel blue #275E8C  6.31:1  ✓ AA body   → all text
+       orange     #D06B22  3.33:1  ornament    → rules, pips, marks. NEVER text
+     --------------------------------------------------------------------------- */
+  :root {
+    --bg: #FDF4EE;
+    --surface: #FFFFFF;
+    --text: #2A1D17;
+    --muted: #7A6055;
+    --border: #E0D8CE;
+
+    --ink: #275E8C;        /* steel blue — TEXT: links, headings, the eyebrow */
+    --ink-strong: #1C4A72; /* hover */
+    --pip: #D06B22;        /* ORNAMENT ONLY — rules, list markers, the status dot */
+    --pip-wash: #FBEEE3;   /* the palest orange tint, for card grounds */
+
+    --head: 'Oswald', ui-sans-serif, system-ui, sans-serif;
+    --body: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --mono: ui-monospace, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14171A;
+      --surface: #1C2126;
+      --text: #ECEFF2;
+      --muted: #9EAAB4;
+      --border: #2C333A;
+
+      --ink: #7FB2DC;
+      --ink-strong: #A2CBEC;
+      --pip: #E8894A;
+      --pip-wash: #23201C;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    line-height: 1.65;
+  }
+  .wrap { max-width: 62ch; margin: 0 auto; padding: 0 clamp(1.15rem, 5vw, 2rem); }
+
+  /* ---- Header ---------------------------------------------------------------- */
+  header {
+    padding: clamp(2.6rem, 9vw, 4.5rem) 0 clamp(1.8rem, 6vw, 2.6rem);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: .85rem; }
+  .brand img { width: 54px; height: 54px; border-radius: 12px; flex-shrink: 0; }
+  .brand h1 {
+    font-family: var(--head); font-weight: 600;
+    font-size: clamp(1.6rem, 6vw, 2.2rem); line-height: 1.05;
+    letter-spacing: -.01em; margin: 0;
+  }
+  .tagline { margin: 1rem 0 0; font-size: clamp(1.02rem, 3vw, 1.14rem); }
+  .whereami {
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--ink); margin: .6rem 0 0;
+  }
+
+  /* ---- Sections -------------------------------------------------------------- */
+  section { margin: clamp(2.2rem, 7vw, 3.2rem) 0 0; }
+  h2 {
+    font-family: var(--head); font-weight: 400; font-size: 1.35rem;
+    margin: 0 0 .9rem; padding-bottom: .4rem;
+    border-bottom: 2px solid var(--pip);   /* the pip as a rule — ornament, not text */
+  }
+  h3 { font-family: var(--head); font-weight: 600; font-size: 1.15rem; margin: 0 0 .3rem; }
+  p { margin: 0 0 .85rem; }
+  a { color: var(--ink); text-underline-offset: 3px; }
+  a:hover { color: var(--ink-strong); }
+
+  /* ---- The game card -------------------------------------------------------- */
+  .game {
+    background: var(--pip-wash);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--pip);
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+  }
+  .game .what { color: var(--muted); font-size: .95rem; margin: 0 0 .9rem; }
+  /* The status line is the most important sentence on the page, so it is stated
+     rather than implied — a coloured dot alone would be decoration pretending to
+     be information. */
+  .status {
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 999px; padding: .35rem .8rem; margin: 0 0 .9rem;
+  }
+  .status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pip); flex-shrink: 0; }
+
+  /* ---- The four steps ------------------------------------------------------- */
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+  .steps li { display: flex; gap: .7rem; align-items: baseline; font-size: .96rem; }
+  .steps .k {
+    font-family: var(--mono); font-size: .68rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted);
+    min-width: 5.5rem; flex-shrink: 0;
+  }
+  .steps .done .k { color: var(--ink); }
+  /* Below ~420px the 5.5rem key column eats a quarter of the viewport and squeezes the
+     step text into a narrow ribbon. Stack instead, so the text gets the full width. */
+  @media (max-width: 420px) {
+    .steps li { flex-direction: column; gap: .1rem; }
+    .steps .k { min-width: 0; }
+  }
+
+  /* ---- Footer --------------------------------------------------------------- */
+  footer {
+    margin: clamp(2.8rem, 9vw, 4rem) 0 0;
+    border-top: 1px solid var(--border);
+    padding: 1.2rem 0 2.6rem;
+    font-family: var(--mono); font-size: .72rem; color: var(--muted);
+  }
+  footer p { margin: 0 0 .35rem; }
+
+  a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 3px; }
+
+  @media print { .game { border: 1px solid #ccc; background: none; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <img src="assets/favicon.svg" alt="" width="54" height="54">
+      <h1>TwoBots Apps</h1>
+    </div>
+    <p class="tagline">Small games, made in Aotearoa New&nbsp;Zealand.</p>
+    <p class="whereami">One person · not a studio</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <h2>The first game</h2>
+    <div class="game">
+      <h3>Tongits TwoBots</h3>
+      <p class="what">Three-player <a href="https://en.wikipedia.org/wiki/Tong-its" rel="noopener">Tongits</a> — you against two bots. Offline, no accounts, no ads.</p>
+      <p class="status"><span class="dot" aria-hidden="true"></span>In development · not released</p>
+      <p>Tongits is a Filipino card game: three players, a 52-card deck, melds and discards, and three ways a hand can end. The name is the pitch — the other two seats are bots, so a hand takes as long as you want it to and never waits on anyone.</p>
+      <ul class="steps">
+        <li class="done"><span class="k">done</span><span>The engine. Full hands play out, all three endings reachable, chips zero-sum across 10,000 simulated hands, no seat advantage.</span></li>
+        <li><span class="k">next</span><span>A playable build in a browser.</span></li>
+        <li><span class="k">then</span><span>Google Play.</span></li>
+        <li><span class="k">maybe</span><span>iOS — only if it earns it.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Who</h2>
+    <p>Built by <a href="https://bjorn.basar.co.nz/" rel="noopener">Bjorn Basar</a> — twenty years of software, most of it not games. The rest of that work is at <a href="https://www.minified.work/" rel="noopener">minified.work</a>.</p>
+    <p>Reach me at <a href="mailto:bjorn@minified.work">bjorn@minified.work</a>.</p>
+  </section>
+
+  <footer>
+    <p>© <span id="yr">2026</span> TwoBots Apps · Aotearoa New Zealand</p>
+    <p>No cookies. Visits are counted by self-hosted, cookieless analytics; nothing is shared with anyone.</p>
+  </footer>
+
+</main>
+
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+
+<!--
+  Cookieless self-hosted GoatCounter. Records location.hostname as the path so this site
+  is separable from its siblings on the shared instance.
+-->
+<script data-cfasync="false">window.goatcounter={path:function(){return location.hostname;}};</script>
+<script data-goatcounter="https://otso.minified.work/count" data-cfasync="false" async src="//otso.minified.work/count.js"></script>
+
+</body>
+</html>
