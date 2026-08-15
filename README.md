@@ -14,7 +14,8 @@ The game itself lives in [`../karu`](../karu) (`karu` = Estonian *bear*, per the
 | `content.md` | The **copy as structured source**, plus the record of what is deliberately omitted. Start here. |
 | `assets/fonts/` | **Self-hosted** Oswald + Open Sans (woff2, latin + latin-ext). |
 | `assets/fonts.css` | The `@font-face` block. See the warning below. |
-| `assets/favicon.svg` | The TwoBots mark, from [`../logos/twobots.dev`](../logos/twobots.dev). |
+| `assets/twobots-mark.svg` | The TwoBots mark — a robot beside an ale bottle — from [`../logos/twobots.dev`](../logos/twobots.dev). |
+| `assets/twobots-icon-*.png` | 16/32/180/512 raster icons: PNG favicons, apple-touch, and the og:image. |
 | `Dockerfile`, `nginx.conf`, `docker-compose.yml`, `ci/deploy.sh` | Image + serving config + deploy. |
 
 ## The name breaks the bear convention on purpose
@@ -45,7 +46,8 @@ The palette rule already assigns **gold/yellow as the stand-in for MTG white** �
 Two things inherited as scar tissue from `diana-cv`:
 
 - `index.html` **links** `assets/fonts.css`, and CSS resolves `url()` against **the stylesheet's own location** — so the paths are `fonts/…`, not `assets/fonts/…`. The document-relative form resolves to `/assets/assets/fonts/…` and 404s, which `diana-cv` shipped for months while silently falling back to system fonts.
-- The reference carries **`?v=<sha256[:8]>`**. `/assets/` is served `max-age=2592000` and there is no Cloudflare API token to purge with, so editing `fonts.css` reaches nobody unless the URL changes too. `ci_assert_cache_busted` in [`../ci/lib.sh`](../ci/lib.sh) fails the deploy on a stale token; `../ci/stamp-cache.sh index.html` fixes it.
+- The **icon is referenced by its real filename** (`twobots-mark.svg`), not a generic `favicon.svg`, for the same reason: `/assets/` is cached for 30 days, so replacing an icon in place reaches nobody who already has one. A new name is a new cache key.
+- The stylesheet reference carries **`?v=<sha256[:8]>`**. `/assets/` is served `max-age=2592000` and there is no Cloudflare API token to purge with, so editing `fonts.css` reaches nobody unless the URL changes too. `ci_assert_cache_busted` in [`../ci/lib.sh`](../ci/lib.sh) fails the deploy on a stale token; `../ci/stamp-cache.sh index.html` fixes it.
 
 ## Hosting and deploy
 

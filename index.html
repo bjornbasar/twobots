@@ -15,13 +15,29 @@
 <meta property="og:url" content="https://twobots.dev/">
 <meta property="og:locale" content="en_NZ">
 <meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://twobots.dev/assets/twobots-icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
 <!--
-  No og:image yet: it would have to be either the bare mark (which a link preview renders
-  badly) or a mock-up of a UI that does not exist. Add one from a real screenshot once
-  there is a playable build.
+  A square 512 mark, which is exactly what twitter:card=summary renders. Platforms that
+  prefer 1.91:1 (Facebook, LinkedIn) will letterbox it — acceptable for a brand card, and
+  far better than no image. Swap in a real screenshot once there is a playable build; a
+  mock-up of a UI that does not exist would be the same lie as a store badge.
 -->
 
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<!--
+  The real mark (a robot beside an ale bottle) from logos/twobots.dev. Referenced by its
+  own filename rather than a generic favicon.svg: /assets/ is served max-age=2592000, so
+  a name change is the only way a replaced icon reaches anyone who already has one — the
+  same reason the stylesheet carries ?v=.
+
+  SVG first for anything modern; the PNG set covers browsers that ignore SVG favicons,
+  and 180 is the apple-touch size.
+-->
+<link rel="icon" type="image/svg+xml" href="assets/twobots-mark.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/twobots-icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/twobots-icon-16.png">
+<link rel="apple-touch-icon" href="assets/twobots-icon-180.png">
 <link rel="stylesheet" href="assets/fonts.css?v=95fc7a2e">
 <!--
   ?v= is a CACHE BUSTER, not decoration. /assets/ is served max-age=2592000, so editing
@@ -176,7 +192,7 @@
 <header>
   <div class="wrap">
     <div class="brand">
-      <img src="assets/favicon.svg" alt="" width="54" height="54">
+      <img src="assets/twobots-mark.svg" alt="" width="54" height="54">
       <h1>TwoBots Apps</h1>
     </div>
     <p class="tagline">Small games, made in Aotearoa New&nbsp;Zealand.</p>
