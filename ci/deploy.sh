@@ -49,8 +49,11 @@ ci_log "pip is ornament-only (correct)"
 # gate that can fail on a third party's availability, and a Packagist outage must not turn
 # an unrelated commit red in #duskana.
 ci_log "assert every advertised composer package resolves with a stable version"
+# `|| true`: grep exits 1 when it matches nothing, and under `set -euo pipefail` that
+# aborts the script on the very case this branch exists to handle — no packages
+# advertised. The empty-string branch below is unreachable without it.
 PKGS=$(grep -oE 'composer (require|create-project) bjornbasar/[a-z0-9-]+' index.html \
-       | awk '{print $NF}' | sort -u)
+       | awk '{print $NF}' | sort -u || true)
 if [ -z "$PKGS" ]; then
   ci_log "no composer commands advertised — nothing to check"
 else
@@ -89,8 +92,9 @@ fi
 # the page talks *about* sign-ups in the explanatory aside, and a naive word-grep would
 # fail on its own honesty note.
 ci_log "assert no signup CTA points at an app without a privacy policy"
+# Same no-match trap as above, and here the no-match case is the DESIRED state.
 CTA_HOSTS=$(grep -oE 'href="https://[a-z-]+\.minified\.work/(register|signup|sign-up)[^"]*"' index.html \
-            | sed -E 's|href="https://([^/]+)/.*|\1|' | sort -u)
+            | sed -E 's|href="https://([^/]+)/.*|\1|' | sort -u || true)
 if [ -z "$CTA_HOSTS" ]; then
   ci_log "no signup CTAs on the page (correct — the apps have no privacy policy yet)"
 else
