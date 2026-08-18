@@ -24,6 +24,87 @@ ci_ensure_buildx
 ci_log "assert cached assets carry a current cache-buster"
 ci_assert_cache_busted index.html
 
+# ---------------------------------------------------------------- pre-deploy gates
+# These run on RUXA against the built index.html, not via `ssh $HURSKA curl` like the
+# smoke tests below. A Packagist lookup has nothing to do with what nginx serves, and a
+# broken install line should fail BEFORE a multi-arch image is built and pushed.
+
+# The pip (orange, 3.33:1) is ornament and must never be a text colour. Adding <code>
+# spans is exactly where that breaks.
+ci_log "assert the ornament colour is never used as text"
+if grep -q 'color: var(--pip)' index.html; then
+  ci_die "index.html uses the pip as a text colour — it is 3.33:1, ornament only"
+fi
+ci_log "pip is ornament-only (correct)"
+
+# Every advertised composer command must actually work. Checks `require` AND
+# `create-project` with the same rule, so there is no special case to forget: publish the
+# package and the line passes; do not, and the deploy fails.
+#
+# 200 is NOT sufficient. Composer's default minimum-stability is `stable`, so a package
+# with only dev-* versions resolves on Packagist and still fails to install. Assert at
+# least one non-dev version.
+#
+# A definitive 404 is FATAL; a transport failure is a WARNING. This is the estate's first
+# gate that can fail on a third party's availability, and a Packagist outage must not turn
+# an unrelated commit red in #duskana.
+ci_log "assert every advertised composer package resolves with a stable version"
+PKGS=$(grep -oE 'composer (require|create-project) bjornbasar/[a-z0-9-]+' index.html \
+       | awk '{print $NF}' | sort -u)
+if [ -z "$PKGS" ]; then
+  ci_log "no composer commands advertised — nothing to check"
+else
+  for PKG in $PKGS; do
+    BODY=$(curl -sS --max-time 20 -w '\n%{http_code}' "https://repo.packagist.org/p2/$PKG.json" 2>/dev/null) || {
+      ci_log "⚠ could not reach Packagist for $PKG — SKIPPING (transport failure, not a stale line)"
+      continue
+    }
+    CODE=$(printf '%s' "$BODY" | tail -1)
+    case "$CODE" in
+      200) ;;
+      404) ci_die "advertised package $PKG does NOT exist on Packagist — the install line on the page is broken" ;;
+      *)   ci_log "⚠ Packagist returned $CODE for $PKG — SKIPPING (not a definitive 404)"; continue ;;
+    esac
+    STABLE=$(printf '%s' "$BODY" | sed '$d' | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)['packages']
+    vs = [v['version'] for pkg in d.values() for v in pkg if not v['version'].startswith('dev-')]
+    print(len(vs))
+except Exception:
+    print('ERR')
+")
+    [ "$STABLE" = "ERR" ] && { ci_log "⚠ could not parse Packagist JSON for $PKG — SKIPPING"; continue; }
+    [ "$STABLE" = "0" ] && ci_die "$PKG has only dev-* versions — \`composer require\` fails under the default minimum-stability"
+    ci_log "resolves (correct): $PKG — $STABLE stable version(s)"
+  done
+fi
+
+# A repo flipped private 404s silently, leaving dead links on a page whose whole job is
+# sending people to code.
+ci_log "assert every linked GitHub repo is reachable"
+for URL in $(grep -oE 'https://github\.com/bjornbasar/[a-zA-Z0-9._-]+' index.html | sort -u); do
+  CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL" 2>/dev/null) || {
+    ci_log "⚠ could not reach $URL — SKIPPING (transport failure)"; continue; }
+  [ "$CODE" = "200" ] || ci_die "$URL returned $CODE — a linked repo is private or gone"
+  ci_log "reachable (correct): $URL"
+done
+
+# POSITIVE assertions. Every other check here is a negative grep; the page had none of
+# these, and doubling the copy is exactly when something load-bearing gets dropped in an
+# edit. minified.work has 157 assertions — this is the minimum equivalent.
+ci_log "assert the load-bearing content is still present"
+for NEEDLE in \
+  'not yet public' \
+  'www.minified.work' \
+  'bjorn.basar.co.nz' \
+  'composer require bjornbasar/karhu' \
+  'GitHub Issues'
+do
+  grep -qF "$NEEDLE" index.html || ci_die "missing from the page: '$NEEDLE'"
+  ci_log "present (correct): '$NEEDLE'"
+done
+
 ci_log "build + push multi-arch: $IMG (:latest + :sha-$CI_SHA)"
 docker buildx build --builder multiarch --platform linux/amd64,linux/arm64 \
   -t "$IMG:latest" -t "$IMG:sha-$CI_SHA" --push .

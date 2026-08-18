@@ -1,74 +1,121 @@
 # TwoBots Apps
 
-Structured source for the landing page at [twobots.dev](https://twobots.dev/).
+Structured source for the page at [twobots.dev](https://twobots.dev/).
 `index.html` is the thing being served; this file is the copy in a form that is easy to
-read and reuse. Keep the two in step.
+read and reuse, plus the record of what is deliberately absent. Keep the two in step.
+
+**The site is the products half of a two-site split:** `twobots.dev` is *what you can get*,
+`www.minified.work` is *what can be built for you*. Each links to the other.
 
 ---
 
 ## Who
 
-**TwoBots Apps** — small games, made in Aotearoa New Zealand. One person, not a studio:
-built by [Bjorn Basar](https://bjorn.basar.co.nz/), whose other work is at
-[minified.work](https://www.minified.work/).
+**TwoBots Apps** — software small enough to understand, made in Aotearoa New Zealand.
+One person: [Bjorn Basar](https://bjorn.basar.co.nz/). The services side of the same
+one-person studio is [minified.work](https://www.minified.work/).
 
-## The first game
+> **On the eyebrow.** It reads "One person · Aotearoa New Zealand", *not* "not a studio",
+> which is what it used to say. That negation sat one click from minified.work's
+> "Software studio" and read as a contradiction — the facts agree (it IS a one-person
+> studio, and minified.work says so), but the labels fought each other. State the scale;
+> let the cross-link sentence reconcile the rest.
 
-**Tongits TwoBots** — three-player [Tongits](https://en.wikipedia.org/wiki/Tong-its):
-you against two bots. Offline, no accounts, no ads.
+## The shelf, stated up front
 
-Tongits is a Filipino card game — three players, a 52-card deck, melds and discards, and
-three ways a hand can end. The name is the pitch: the other two seats are bots, so a hand
-takes as long as you want it to and never waits on anyone.
+> Four MIT-licensed PHP packages you can install today, and one card game that is
+> playable but not yet public.
 
-**Status: in development. Not released yet.**
+The headline product is not released, so the count goes at the top. A "products" page that
+makes you scroll to discover there is one unreleased thing reads as bait-and-switch.
+
+## For everyone — `#games`
+
+**Tongits TwoBots** — three-player [Tongits](https://en.wikipedia.org/wiki/Tong-its), you
+against two bots. Offline, no accounts, no ads.
+
+**Status: playable, not yet public.**
 
 | | |
 |---|---|
-| The engine | Done — full hands play out, all three endings reachable, chips zero-sum over 10,000 simulated hands, no seat advantage |
-| A playable build | Next |
-| Google Play | After that |
-| iOS | Only if it earns it |
+| done | The engine: full hands, all three endings reachable, chips zero-sum across 10,000 simulated hands, no seat advantage |
+| done | Playable in a browser against two bots, installable as an offline app |
+| next | A real playtest — five players, one URL. The quality gate everything after depends on |
+| then | Android as a thin shell around the web build; iOS only if it earns it |
 
-Sourced from `karu/README.md` — the repo is `karu` (Estonian *bear*, per the workspace
-naming convention). Keep the numbers here in step with that file, or drop them rather
-than let them drift.
+Sourced from `karu/README.md` (M1 + M2 complete). **This drifted once already** — the page
+claimed a browser build was "next" for four days after it shipped. If you change the
+milestones there, change them here.
+
+**Describe capability, not polish.** `karu`'s milestone table still lists "the real table"
+(M5) as not done even though card faces and a board layout have landed. Saying "playable
+and installable" is true under either reading; saying "beautiful" or "ugly text cards"
+is not.
+
+## For developers — `#dev`
+
+| | install | state |
+|---|---|---|
+| **karhu** | `composer require bjornbasar/karhu` | v0.1.4 · MIT · PHP 8.3+ · PHPStan L8 |
+| karhu-db | `composer require bjornbasar/karhu-db` | v0.1.0 · MIT |
+| karhu-queue | `composer require bjornbasar/karhu-queue` | v0.3.0 · MIT |
+| karhu-view | `composer require bjornbasar/karhu-view` | v0.1.0 · MIT |
+| istrbuddy | *(not on Packagist — clone it)* | reference app, MIT |
+
+**Said plainly on the page:** everything is 0.x, and `karhu-db` / `karhu-view` last
+released April 2026. Stable in the sense that they run in production daily — not in the
+sense of a 1.0 or a release cadence. A developer evaluating "can I use this at work"
+checks licence, 1.0 and last release; two of those are weak, so the page says so rather
+than letting them find out.
+
+**`istrbuddy` is labelled a reference app, not a product.** Its `composer.json` pins
+`karhu-db: dev-main` with `minimum-stability: dev`; a committed lockfile makes clone-and-run
+reproducible, but "an issue tracker you can run" would invite feature requests it is not
+there to serve.
+
+**`karhu-skeleton` is deliberately absent.** It is not on Packagist, so
+`composer create-project` would 404 — and `karhu`'s own README opens with exactly that
+command. Publishing it is a prerequisite for advertising it here, and the deploy gate
+enforces that automatically: the moment it resolves, the line can go in.
+
+**Support: GitHub Issues** on the relevant repo. Public on purpose.
 
 ## Contact
 
-**Now:** `bjorn@minified.work`
-**Intended:** `dev@twobots.dev` — swap it in once mail is configured.
+**Now:** `bjorn@minified.work` · **Intended:** `dev@twobots.dev`
 
-**Why not `dev@twobots.dev` yet:** the zone has **no MX records**, so anything
-`@twobots.dev` bounces today. Publishing an address that silently fails is worse than
-publishing one that works but is off-brand. The three sibling zones (`minified.work`,
-`basar.co.nz`, `peopsquik.com`) all carry Google Workspace MX, which is why one of those
-stands in.
-
-**To switch:** add Workspace MX (or a routing entry) to the `twobots.dev` zone, verify
-delivery, then change the single `mailto:` in `index.html` and this file. There is no
-other place the address appears.
+The zone has **no MX records**, so `@twobots.dev` bounces today. Add Workspace MX, verify
+delivery, then change the single `mailto:` in `index.html` and this file — the only two
+places it appears.
 
 ---
 
 ## What is deliberately not here
 
-Recorded so none of it reads as an oversight.
+- **No store badges or store links.** Nothing is published. A "Get it on Google Play"
+  badge pointing nowhere reads as broken or dishonest. The deploy asserts their absence;
+  delete that assertion in the same commit that adds a real listing.
+- **No "Play it" link.** The game is playable in dev but has no public URL. When it gets
+  one it will be linked — see the note below on where that URL must live.
+- **No screenshots.** *(This rule changed.)* It used to be "there is no UI"; there is one
+  now. It is held back because `karu`'s own milestones still list the real table as not
+  done, so a shot could misrepresent the polish in either direction.
+- **No ratings, download counts or launch date.** Nothing to count; a date would be a guess.
+- **No "we".** It is one person, and the page says so.
+- **No privacy policy.** Deliberate and tracked — see below.
+- **`mishka` is not on the shelf** even though its repo is public and minified.work calls
+  it the framework's flagship proof. It is a family-hub app for one household, not
+  something to install. The page says so, because its absence would otherwise look like an
+  oversight.
 
-- **No store badges.** There is no listing to link to. A "Get it on Google Play" badge
-  pointing nowhere is worse than no badge — it reads as either broken or dishonest.
-  `ci/deploy.sh` asserts no `play.google.com` or `apps.apple.com` link is served, so one
-  cannot be added ahead of a real listing.
-- **No screenshots.** There is no UI yet (that is the next milestone). Mock-ups presented
-  as a product are the same lie in a different medium.
-- **No ratings, download counts, or launch date.** Nothing to count, and a date would be
-  a guess.
-- **No "we".** It is one person. The page says so.
-- **No roadmap detail beyond the four lines above.** The full M0–M7 milestone table lives
-  in the repo; publishing an internal schedule invites questions it cannot answer.
-- **No privacy policy.** Deliberate, and tracked: the app will need one before the first
-  Play upload, and `karu/DOCS.md` already rules that it goes **off-fleet on Cloudflare
-  Pages** — Google requires a non-geofenced, non-editable, non-PDF URL plus an in-app
-  link, and a store-mandated URL 502-ing during review is a rejection. This page is
-  marketing only, so the homelab is a fine host for it; the policy is not, and must not
-  quietly end up here.
+## Two things that must not quietly land here
+
+**The app's privacy/support page belongs OFF-FLEET on Cloudflare Pages** (`karu/DOCS.md`).
+Google requires a non-geofenced, non-editable, non-PDF URL plus an in-app link, and such a
+URL 502-ing during review is a rejection — on a Pi behind a residential line. This page is
+marketing, so an outage costs a visitor rather than a submission.
+
+**The PWA's public URL is load-bearing, not marketing.** `karu/ANDROID.md` makes Android a
+**TWA** — the app *is* the deployed website — with `assetlinks.json` required at that
+origin's root, for package `dev.twobots.tongits`. So where the web build is hosted decides
+whether `twobots.dev`'s apex can stay on Hurska. **Decide before M3, not after.**

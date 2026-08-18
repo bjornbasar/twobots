@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TwoBots Apps — small games from Aotearoa New Zealand</title>
-<meta name="description" content="TwoBots Apps — small games made in Aotearoa New Zealand. First up: Tongits TwoBots, three-player Tongits against two bots. In development.">
+<title>TwoBots Apps — software you can install, from Aotearoa New Zealand</title>
+<meta name="description" content="TwoBots Apps — what's built and ready to use: four MIT-licensed PHP packages on Packagist, and Tongits TwoBots, a three-player card game against two bots.">
 <link rel="canonical" href="https://twobots.dev/">
 <meta name="color-scheme" content="light dark">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TwoBots Apps">
-<meta property="og:title" content="TwoBots Apps — small games from Aotearoa New Zealand">
-<meta property="og:description" content="First up: Tongits TwoBots — three-player Tongits against two bots. Offline, no accounts, no ads. In development.">
+<meta property="og:title" content="TwoBots Apps — software you can install">
+<meta property="og:description" content="Four MIT-licensed PHP packages on Packagist, and Tongits TwoBots — three-player Tongits against two bots. Made in Aotearoa New Zealand.">
 <meta property="og:url" content="https://twobots.dev/">
 <meta property="og:locale" content="en_NZ">
 <meta name="twitter:card" content="summary">
@@ -20,9 +20,10 @@
 <meta property="og:image:height" content="512">
 <!--
   A square 512 mark, which is exactly what twitter:card=summary renders. Platforms that
-  prefer 1.91:1 (Facebook, LinkedIn) will letterbox it — acceptable for a brand card, and
-  far better than no image. Swap in a real screenshot once there is a playable build; a
-  mock-up of a UI that does not exist would be the same lie as a store badge.
+  prefer 1.91:1 (Facebook, LinkedIn) will letterbox it — acceptable for a brand card.
+  A game screenshot is possible now (there IS a UI), but karu's milestone table still
+  lists "the real table" as not done, so a shot could misrepresent the polish in either
+  direction. Add one when that milestone actually closes.
 -->
 
 <!--
@@ -30,9 +31,6 @@
   own filename rather than a generic favicon.svg: /assets/ is served max-age=2592000, so
   a name change is the only way a replaced icon reaches anyone who already has one — the
   same reason the stylesheet carries ?v=.
-
-  SVG first for anything modern; the PNG set covers browsers that ignore SVG favicons,
-  and 180 is the apple-touch size.
 -->
 <link rel="icon" type="image/svg+xml" href="assets/twobots-mark.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/twobots-icon-32.png">
@@ -50,19 +48,24 @@
 -->
 <style>
   /* ---------------------------------------------------------------------------
-     Palette — Izzet (U/R), the fifth public domain. Blue for the bots, red for
-     play; Izzet is also MTG's invention guild, which suits a hand-rolled engine.
+     Palette — Izzet (U/R). Blue for the bots, red for play; Izzet is also MTG's
+     invention guild, which suits a hand-rolled engine.
 
      THE R SKEWS ORANGE, NOT GOLD, on purpose. The estate's palette rule already
      assigns gold/yellow as the stand-in for MTG white — that is how Orzhov works
      on peopsquik.com (gold tile #BF9311). A gold-leaning amber here would read as
-     W and quietly make this Azorius. #D06B22 reads unambiguously as R, and is far
-     enough from basar.co.nz's terracotta #C63F2A in hue to stay distinct.
+     W and quietly make this Azorius. #D06B22 reads unambiguously as R.
 
-     Split by job, same as mrs.peopsquik.com and for the same reason — measured
-     against the cream ground, the warm half cannot carry text:
+     Split by job — measured against the cream ground, the warm half cannot carry
+     text:
        steel blue #275E8C  6.31:1  ✓ AA body   → all text
        orange     #D06B22  3.33:1  ornament    → rules, pips, marks. NEVER text
+
+     The pip must NEVER be a text colour. Adding <code> spans is precisely where
+     that invariant breaks, so code uses --text on a tinted ground rather than a
+     coloured foreground. ci/deploy.sh greps for it, so this comment deliberately
+     avoids spelling the property out — a check that trips on its own
+     documentation is a check nobody trusts.
      --------------------------------------------------------------------------- */
   :root {
     --bg: #FDF4EE;
@@ -73,7 +76,7 @@
 
     --ink: #275E8C;        /* steel blue — TEXT: links, headings, the eyebrow */
     --ink-strong: #1C4A72; /* hover */
-    --pip: #D06B22;        /* ORNAMENT ONLY — rules, list markers, the status dot */
+    --pip: #D06B22;        /* ORNAMENT ONLY — rules, markers, the status dot */
     --pip-wash: #FBEEE3;   /* the palest orange tint, for card grounds */
 
     --head: 'Oswald', ui-sans-serif, system-ui, sans-serif;
@@ -104,7 +107,7 @@
     font-family: var(--body);
     line-height: 1.65;
   }
-  .wrap { max-width: 62ch; margin: 0 auto; padding: 0 clamp(1.15rem, 5vw, 2rem); }
+  .wrap { max-width: 66ch; margin: 0 auto; padding: 0 clamp(1.15rem, 5vw, 2rem); }
 
   /* ---- Header ---------------------------------------------------------------- */
   header {
@@ -119,35 +122,52 @@
     letter-spacing: -.01em; margin: 0;
   }
   .tagline { margin: 1rem 0 0; font-size: clamp(1.02rem, 3vw, 1.14rem); }
+  /* A statement of scale, NOT a negation. This previously read "not a studio", which
+     sat one click from minified.work's "Software studio" and read as a contradiction —
+     the facts agreed (it IS a one-person studio), the labels did not. The cross-link
+     sentence in #who does the reconciling instead. */
   .whereami {
     font-family: var(--mono); font-size: .72rem; letter-spacing: .13em;
     text-transform: uppercase; color: var(--ink); margin: .6rem 0 0;
   }
+  /* The honest inventory, up front. The headline product is not public, so opening
+     with a "shelf" and no count would read as bait-and-switch. */
+  .inventory {
+    margin: 1.5rem 0 0; padding: .8rem 1rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--pip); border-radius: 8px;
+    font-size: .96rem;
+  }
+  .inventory p { margin: 0; }
 
   /* ---- Sections -------------------------------------------------------------- */
   section { margin: clamp(2.2rem, 7vw, 3.2rem) 0 0; }
   h2 {
     font-family: var(--head); font-weight: 400; font-size: 1.35rem;
-    margin: 0 0 .9rem; padding-bottom: .4rem;
+    margin: 0 0 .3rem; padding-bottom: .4rem;
     border-bottom: 2px solid var(--pip);   /* the pip as a rule — ornament, not text */
   }
+  .subhead { color: var(--muted); font-size: .92rem; margin: 0 0 1.1rem; }
   h3 { font-family: var(--head); font-weight: 600; font-size: 1.15rem; margin: 0 0 .3rem; }
   p { margin: 0 0 .85rem; }
   a { color: var(--ink); text-underline-offset: 3px; }
   a:hover { color: var(--ink-strong); }
 
-  /* ---- The game card -------------------------------------------------------- */
-  .game {
+  /* ---- Cards, shared by both tiers ------------------------------------------- */
+  .card {
     background: var(--pip-wash);
     border: 1px solid var(--border);
     border-left: 3px solid var(--pip);
     border-radius: 10px;
     padding: 1.1rem 1.25rem;
+    margin: 0 0 .8rem;
   }
-  .game .what { color: var(--muted); font-size: .95rem; margin: 0 0 .9rem; }
-  /* The status line is the most important sentence on the page, so it is stated
-     rather than implied — a coloured dot alone would be decoration pretending to
-     be information. */
+  .card .what { color: var(--muted); font-size: .95rem; margin: 0 0 .9rem; }
+  .card > :last-child { margin-bottom: 0; }
+
+  /* The status line is the most important sentence about an unreleased thing, so it
+     is stated rather than implied — a coloured dot alone would be decoration
+     pretending to be information. */
   .status {
     display: inline-flex; align-items: center; gap: .5rem;
     font-family: var(--mono); font-size: .72rem; letter-spacing: .1em;
@@ -157,7 +177,7 @@
   }
   .status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pip); flex-shrink: 0; }
 
-  /* ---- The four steps ------------------------------------------------------- */
+  /* ---- The steps ------------------------------------------------------------- */
   .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
   .steps li { display: flex; gap: .7rem; align-items: baseline; font-size: .96rem; }
   .steps .k {
@@ -166,11 +186,40 @@
     min-width: 5.5rem; flex-shrink: 0;
   }
   .steps .done .k { color: var(--ink); }
-  /* Below ~420px the 5.5rem key column eats a quarter of the viewport and squeezes the
-     step text into a narrow ribbon. Stack instead, so the text gets the full width. */
   @media (max-width: 420px) {
     .steps li { flex-direction: column; gap: .1rem; }
     .steps .k { min-width: 0; }
+  }
+
+  /* ---- Package entries ------------------------------------------------------- */
+  code {
+    font-family: var(--mono); font-size: .86em; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; padding: .08em .38em;
+  }
+  /* Install lines scroll rather than wrap: a broken `composer require` is worse than
+     a horizontal scrollbar inside one box. */
+  .install {
+    display: block; font-family: var(--mono); font-size: .82rem;
+    color: var(--text); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: .55rem .7rem; margin: .1rem 0 .7rem;
+    overflow-x: auto; white-space: pre;
+  }
+  .meta {
+    font-family: var(--mono); font-size: .7rem; letter-spacing: .06em;
+    color: var(--muted); margin: 0 0 .5rem;
+  }
+  .links { font-size: .88rem; margin: 0; }
+  .links a + a::before { content: " · "; color: var(--muted); }
+  .pkgs { list-style: none; margin: 0 0 .9rem; padding: 0; }
+  .pkgs > li { margin: 0 0 .9rem; font-size: .94rem; }
+  .pkgs > li:last-child { margin-bottom: 0; }
+  .n { font-family: var(--mono); font-size: .86rem; }
+
+  .aside {
+    font-size: .9rem; color: var(--muted);
+    border-left: 2px solid var(--border); padding-left: .9rem; margin: 1rem 0 0;
   }
 
   /* ---- Footer --------------------------------------------------------------- */
@@ -184,7 +233,7 @@
 
   a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 3px; }
 
-  @media print { .game { border: 1px solid #ccc; background: none; } }
+  @media print { .card { border: 1px solid #ccc; background: none; } }
 </style>
 </head>
 <body>
@@ -195,32 +244,82 @@
       <img src="assets/twobots-mark.svg" alt="" width="54" height="54">
       <h1>TwoBots Apps</h1>
     </div>
-    <p class="tagline">Small games, made in Aotearoa New&nbsp;Zealand.</p>
-    <p class="whereami">One person · not a studio</p>
+    <p class="tagline">Software small enough to understand, made in Aotearoa New&nbsp;Zealand.</p>
+    <p class="whereami">One person · Aotearoa New Zealand</p>
+
+    <div class="inventory">
+      <p><strong>What's here right now:</strong> four MIT-licensed PHP packages you can install today, and one card game that is playable but not yet public. That is the whole shelf — stated up front rather than at the bottom.</p>
+    </div>
   </div>
 </header>
 
 <main class="wrap">
 
-  <section>
-    <h2>The first game</h2>
-    <div class="game">
+  <!-- Stable ids: if a tier ever moves to its own page, inbound anchors survive. -->
+  <section id="games">
+    <h2>For everyone</h2>
+    <p class="subhead">Games and apps you play or use.</p>
+
+    <div class="card">
       <h3>Tongits TwoBots</h3>
       <p class="what">Three-player <a href="https://en.wikipedia.org/wiki/Tong-its" rel="noopener">Tongits</a> — you against two bots. Offline, no accounts, no ads.</p>
-      <p class="status"><span class="dot" aria-hidden="true"></span>In development · not released</p>
+      <p class="status"><span class="dot" aria-hidden="true"></span>Playable · not yet public</p>
       <p>Tongits is a Filipino card game: three players, a 52-card deck, melds and discards, and three ways a hand can end. The name is the pitch — the other two seats are bots, so a hand takes as long as you want it to and never waits on anyone.</p>
+      <p>It plays a full hand in a browser today and installs as an offline app, but there is no public URL yet. When there is one, it will be linked here.</p>
       <ul class="steps">
-        <li class="done"><span class="k">done</span><span>The engine. Full hands play out, all three endings reachable, chips zero-sum across 10,000 simulated hands, no seat advantage.</span></li>
-        <li><span class="k">next</span><span>A playable build in a browser.</span></li>
-        <li><span class="k">then</span><span>Google Play.</span></li>
-        <li><span class="k">maybe</span><span>iOS — only if it earns it.</span></li>
+        <li class="done"><span class="k">done</span><span>The engine: full hands, all three endings reachable, chips zero-sum across 10,000 simulated hands, no seat advantage.</span></li>
+        <li class="done"><span class="k">done</span><span>Playable in a browser against two bots, and installable as an offline app.</span></li>
+        <li><span class="k">next</span><span>A real playtest — five players, one URL. That is the quality gate everything after it depends on.</span></li>
+        <li><span class="k">then</span><span>Android, as a thin shell around the web build. Then iOS, only if it earns it.</span></li>
       </ul>
     </div>
   </section>
 
-  <section>
+  <section id="dev">
+    <h2>For developers</h2>
+    <p class="subhead">MIT-licensed PHP on Packagist. Small, readable, and running in production daily.</p>
+
+    <div class="card">
+      <h3>karhu</h3>
+      <p class="what">An attribute-routed PHP 8.3+ microframework with <strong>zero runtime dependencies</strong>.</p>
+      <code class="install">composer require bjornbasar/karhu</code>
+      <p class="meta">v0.1.4 · MIT · PHP 8.3+ · PHPStan level 8</p>
+      <p>Its own request/response layer, a reflection-based auto-wiring container, an onion middleware pipeline and a CLI — in roughly 1,200 lines. Architecture decisions are kept as ADRs in the repo, and it is built test-first.</p>
+      <p class="links"><a href="https://github.com/bjornbasar/karhu" rel="noopener">GitHub ↗</a><a href="https://packagist.org/packages/bjornbasar/karhu" rel="noopener">Packagist ↗</a></p>
+    </div>
+
+    <div class="card">
+      <h3>The companion packages</h3>
+      <p class="what">Each small, focused, and independently composable.</p>
+      <ul class="pkgs">
+        <li><span class="n">karhu-db</span> — a thin PDO wrapper with an active-record base. <span class="meta">v0.1.0 · MIT</span>
+          <code class="install">composer require bjornbasar/karhu-db</code></li>
+        <li><span class="n">karhu-queue</span> — a database-backed queue and worker, using <code>SKIP LOCKED</code>. <span class="meta">v0.3.0 · MIT</span>
+          <code class="install">composer require bjornbasar/karhu-queue</code></li>
+        <li><span class="n">karhu-view</span> — a template-engine bridge for Twig and Plates. <span class="meta">v0.1.0 · MIT</span>
+          <code class="install">composer require bjornbasar/karhu-view</code></li>
+      </ul>
+      <p class="links"><a href="https://github.com/bjornbasar/karhu-db" rel="noopener">karhu-db ↗</a><a href="https://github.com/bjornbasar/karhu-queue" rel="noopener">karhu-queue ↗</a><a href="https://github.com/bjornbasar/karhu-view" rel="noopener">karhu-view ↗</a></p>
+    </div>
+
+    <p class="aside"><strong>Where these actually are, stated plainly.</strong> Everything above is <strong>0.x</strong>, and <code>karhu-db</code> and <code>karhu-view</code> last released in April 2026. They are stable in the sense that they run in production every day — not in the sense of a 1.0 promise or a release cadence.</p>
+
+    <div class="card">
+      <h3>istrbuddy</h3>
+      <p class="what">A deliberately minimal issue tracker — <strong>a reference app, not a product.</strong></p>
+      <p>The clearest way to see how an application meets the framework: the whole seam is about 67 lines. Clone it to read a working karhu app end to end. It is not on Packagist and takes no feature requests — it exists to be read.</p>
+      <p class="links"><a href="https://github.com/bjornbasar/istrbuddy" rel="noopener">GitHub ↗</a></p>
+    </div>
+
+    <p class="aside"><strong>Why <code>mishka</code> is not listed here.</strong> It is the framework's flagship proof and the repo is public, but it is a family-hub app built for one household — not something to install. It appears as evidence on <a href="https://www.minified.work/#work" rel="noopener">minified.work</a> instead.</p>
+
+    <p class="aside">Questions and bugs go to <strong>GitHub Issues</strong> on the relevant repo. That is the support channel, and it is public on purpose.</p>
+  </section>
+
+  <section id="who">
     <h2>Who</h2>
-    <p>Built by <a href="https://bjorn.basar.co.nz/" rel="noopener">Bjorn Basar</a> — twenty years of software, most of it not games. The rest of that work is at <a href="https://www.minified.work/" rel="noopener">minified.work</a>.</p>
+    <p>Built by <a href="https://bjorn.basar.co.nz/" rel="noopener">Bjorn Basar</a> — twenty years of software, most of it not games. TwoBots Apps is the <em>products</em> side of a one-person studio; the <em>services</em> side is <a href="https://www.minified.work/" rel="noopener">minified.work</a>.</p>
+    <p><strong>Need something built, rather than something to install?</strong> That is what <a href="https://www.minified.work/" rel="noopener">minified.work</a> is for.</p>
     <p>Reach me at <a href="mailto:bjorn@minified.work">bjorn@minified.work</a>.</p>
   </section>
 
@@ -238,7 +337,7 @@
   is separable from its siblings on the shared instance.
 -->
 <script data-cfasync="false">window.goatcounter={path:function(){return location.hostname;}};</script>
-<script data-goatcounter="https://traffic.bjornbasar.com/count" data-cfasync="false" async src="//traffic.bjornbasar.com/count.js"></script>
+<script data-goatcounter="https://otso.minified.work/count" data-cfasync="false" async src="//otso.minified.work/count.js"></script>
 
 </body>
 </html>

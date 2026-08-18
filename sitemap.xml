@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  One page, so one URL. No <lastmod>: this file is hand-authored rather than generated,
+  and a hardcoded date that nobody remembers to bump is worse than no date at all —
+  crawlers treat a stale lastmod as a reason to come back less often.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://twobots.dev/</loc>
+  </url>
+</urlset>

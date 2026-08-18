@@ -1,0 +1,7 @@
+# Cloudflare prepends its managed content-signals block to this file, so what a crawler
+# actually receives is that block followed by these lines. Verified against
+# www.minified.work, whose origin robots.txt survives the same way.
+User-agent: *
+Allow: /
+
+Sitemap: https://twobots.dev/sitemap.xml

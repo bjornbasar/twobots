@@ -16,4 +16,9 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY index.html /usr/share/nginx/html/index.html
 COPY assets/ /usr/share/nginx/html/assets/
 
+# Indexable business site, so it gets a real robots + sitemap. Cloudflare prepends its
+# managed content-signals block to robots.txt; the origin's lines survive after it.
+COPY robots.txt /usr/share/nginx/html/robots.txt
+COPY sitemap.xml /usr/share/nginx/html/sitemap.xml
+
 EXPOSE 80
