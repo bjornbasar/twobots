@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TwoBots Apps — software you can install, from Aotearoa New Zealand</title>
-<meta name="description" content="TwoBots Apps — what's built and ready to use: four MIT-licensed PHP packages on Packagist, and Tongits TwoBots, a three-player card game against two bots.">
+<meta name="description" content="TwoBots Apps — what's built and ready to use: four self-hostable apps, four MIT-licensed PHP packages on Packagist, and Tongits TwoBots, a three-player card game against two bots.">
 <link rel="canonical" href="https://twobots.dev/">
 <meta name="color-scheme" content="light dark">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TwoBots Apps">
 <meta property="og:title" content="TwoBots Apps — software you can install">
-<meta property="og:description" content="Four MIT-licensed PHP packages on Packagist, and Tongits TwoBots — three-player Tongits against two bots. Made in Aotearoa New Zealand.">
+<meta property="og:description" content="Self-hostable apps, four MIT-licensed PHP packages on Packagist, and Tongits TwoBots — three-player Tongits against two bots. Made in Aotearoa New Zealand.">
 <meta property="og:url" content="https://twobots.dev/">
 <meta property="og:locale" content="en_NZ">
 <meta name="twitter:card" content="summary">
@@ -248,7 +248,7 @@
     <p class="whereami">One person · Aotearoa New Zealand</p>
 
     <div class="inventory">
-      <p><strong>What's here right now:</strong> four MIT-licensed PHP packages you can install today, and one card game that is playable but not yet public. That is the whole shelf — stated up front rather than at the bottom.</p>
+      <p><strong>What's here right now:</strong> four apps you can self-host or ask me about, four MIT-licensed PHP packages you can install today, and one card game that is playable but not yet public. That is the whole shelf — stated up front rather than at the bottom.</p>
     </div>
   </div>
 </header>
@@ -256,9 +256,46 @@
 <main class="wrap">
 
   <!-- Stable ids: if a tier ever moves to its own page, inbound anchors survive. -->
+  <!-- id stays #games: it shipped in a released page and inbound anchors should survive
+       a heading change. The heading and contents widened; the anchor did not. -->
   <section id="games">
     <h2>For everyone</h2>
-    <p class="subhead">Games and apps you play or use.</p>
+    <p class="subhead">Apps and games. Run them yourself, or ask about the hosted ones.</p>
+
+    <!-- Says why there is no "sign up" button, rather than leaving a silence. All four
+         hosted apps DO accept registration today — but none of them has a privacy policy
+         yet, and inviting an email and a password with nothing behind it at the point of
+         collection is the one gap this estate has never shipped. ci/deploy.sh enforces
+         this: a signup CTA fails the deploy until that app's /privacy returns 200. -->
+    <p class="aside"><strong>On the hosted versions.</strong> These run on my own hardware in New Zealand and do accept sign-ups, but I am not inviting them here yet — each app needs its own privacy policy first, and writing those is the next job. Until then: self-host it, or ask me for access.</p>
+
+    <div class="card">
+      <h3>mishka</h3>
+      <p class="what">Mishka Den — the den mother for your family. Shared calendar, chores, lists, and the everyday coordination a household needs.</p>
+      <p><strong>Self-host it.</strong> MIT, public repo, compose file — the one here you can take away today. It is also the flagship proof of <a href="#dev">karhu</a>: the app that pushed the framework into recurring events, session auth and a queue-backed notification pipeline.</p>
+      <p class="links"><a href="https://github.com/bjornbasar/mishka" rel="noopener">GitHub ↗</a><a href="https://mishka.minified.work/" rel="noopener">See it running ↗</a></p>
+    </div>
+
+    <div class="card">
+      <h3>artio</h3>
+      <p class="what">Artio Library — a trading-card-game collection manager and deck builder. Tracks a library, builds decks, runs playtests, and scans cards with a phone camera.</p>
+      <p><strong>Self-host? Ask me.</strong> The repo is not public yet. It runs in production daily, and I am happy to talk about getting you a copy.</p>
+      <p class="links"><a href="https://artio.minified.work/" rel="noopener">See it running ↗</a></p>
+    </div>
+
+    <div class="card">
+      <h3>hartza</h3>
+      <p class="what">Household budget and cash-flow forecasting. Income, allocations and transactions across a multi-user household — descriptive rather than prescriptive: where you are, and where you may be.</p>
+      <p><strong>Self-host? Ask me.</strong> The repo is not public yet.</p>
+      <p class="links"><a href="https://hartza.minified.work/" rel="noopener">See it running ↗</a></p>
+    </div>
+
+    <div class="card">
+      <h3>kuma</h3>
+      <p class="what">Kuma Cooks — recipe management. Save recipes, import them from a URL or a photo, filter by tag, and cook in a full-screen step-by-step mode.</p>
+      <p><strong>Self-host? Ask me.</strong> The repo is not public yet.</p>
+      <p class="links"><a href="https://kuma.minified.work/" rel="noopener">See it running ↗</a></p>
+    </div>
 
     <div class="card">
       <h3>Tongits TwoBots</h3>

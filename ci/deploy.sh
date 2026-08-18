@@ -80,6 +80,28 @@ except Exception:
   done
 fi
 
+# A signup CTA solicits an email and a password. Under the Privacy Act 2020 you have to
+# say what you collect and why AT THE POINT OF COLLECTION, so a "sign up" link is only
+# honest once that app has a privacy policy. All four hosted apps accept registration
+# today and none has one — this gate is what stops the CTA landing before the policy does.
+#
+# Deliberately keyed on the LINKED HOST, not on the word "sign up" anywhere on the page:
+# the page talks *about* sign-ups in the explanatory aside, and a naive word-grep would
+# fail on its own honesty note.
+ci_log "assert no signup CTA points at an app without a privacy policy"
+CTA_HOSTS=$(grep -oE 'href="https://[a-z-]+\.minified\.work/(register|signup|sign-up)[^"]*"' index.html \
+            | sed -E 's|href="https://([^/]+)/.*|\1|' | sort -u)
+if [ -z "$CTA_HOSTS" ]; then
+  ci_log "no signup CTAs on the page (correct — the apps have no privacy policy yet)"
+else
+  for H in $CTA_HOSTS; do
+    CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://$H/privacy" 2>/dev/null) || {
+      ci_log "⚠ could not reach https://$H/privacy — SKIPPING (transport failure)"; continue; }
+    [ "$CODE" = "200" ] || ci_die "the page invites signup at $H but https://$H/privacy returns $CODE — write the policy before the CTA"
+    ci_log "signup CTA is backed by a policy (correct): $H"
+  done
+fi
+
 # A repo flipped private 404s silently, leaving dead links on a page whose whole job is
 # sending people to code.
 ci_log "assert every linked GitHub repo is reachable"
@@ -96,6 +118,7 @@ done
 ci_log "assert the load-bearing content is still present"
 for NEEDLE in \
   'not yet public' \
+  'four apps you can self-host' \
   'www.minified.work' \
   'bjorn.basar.co.nz' \
   'composer require bjornbasar/karhu' \
