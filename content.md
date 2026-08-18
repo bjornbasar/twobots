@@ -23,18 +23,19 @@ one-person studio is [minified.work](https://www.minified.work/).
 
 ## The shelf, stated up front
 
-> Four MIT-licensed PHP packages you can install today, and one card game that is
-> playable but not yet public.
+> Four MIT-licensed PHP packages you can install today, and one card game you can play in
+> your browser this minute — though not on any app store yet.
 
-The headline product is not released, so the count goes at the top. A "products" page that
-makes you scroll to discover there is one unreleased thing reads as bait-and-switch.
+The count still goes at the top. It used to be there because the headline product was
+unreleased and a page that makes you scroll to discover that reads as bait-and-switch; now it
+is there because "you can play it right now" is the strongest thing the shelf has to say.
 
 ## For everyone — `#games`
 
 **Tongits TwoBots** — three-player [Tongits](https://en.wikipedia.org/wiki/Tong-its), you
 against two bots. Offline, no accounts, no ads.
 
-**Status: playable, not yet public.**
+**Status: publicly playable at [tongits.twobots.dev](https://tongits.twobots.dev/), not on any app store yet.**
 
 | | |
 |---|---|
@@ -95,8 +96,10 @@ places it appears.
 - **No store badges or store links.** Nothing is published. A "Get it on Google Play"
   badge pointing nowhere reads as broken or dishonest. The deploy asserts their absence;
   delete that assertion in the same commit that adds a real listing.
-- **No "Play it" link.** The game is playable in dev but has no public URL. When it gets
-  one it will be linked — see the note below on where that URL must live.
+- ~~**No "Play it" link.**~~ *(This rule is now spent.)* It existed because the game had no
+  public URL. It has one — `tongits.twobots.dev`, on Hurska behind Ayula — so the card links
+  to it. The store-badge rule below is a SEPARATE rule and still stands: a playable web build
+  is not a store listing, and the page says so in both places.
 - **No screenshots.** *(This rule changed.)* It used to be "there is no UI"; there is one
   now. It is held back because `karu`'s own milestones still list the real table as not
   done, so a shot could misrepresent the polish in either direction.

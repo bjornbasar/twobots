@@ -121,7 +121,8 @@ done
 # edit. minified.work has 157 assertions — this is the minimum equivalent.
 ci_log "assert the load-bearing content is still present"
 for NEEDLE in \
-  'not yet public' \
+  'not on any app store yet' \
+  'https://tongits.twobots.dev/' \
   'four apps you can self-host' \
   'www.minified.work' \
   'bjorn.basar.co.nz' \
