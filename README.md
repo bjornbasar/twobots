@@ -89,7 +89,7 @@ The estate's shared `/privacy/` page is also **not** mounted here. It opens "The
 
 ## Analytics
 
-Cookieless, self-hosted **GoatCounter** (`otso.minified.work`), recording `location.hostname` so this site is separable from its siblings on the shared instance. Disclosed in one footer line: no cookies, nothing shared.
+Cookieless, self-hosted **GoatCounter** (`traffic.bjornbasar.com`), recording `location.hostname` so this site is separable from its siblings on the shared instance. Disclosed in one footer line: no cookies, nothing shared.
 
 ## Contact
 
