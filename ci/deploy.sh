@@ -133,6 +133,20 @@ for URL in $(grep -oE 'href="https://(framework\.twobots\.dev|bjornbasar\.github
   ci_log "docs link resolves (correct): $URL"
 done
 
+# A published address that bounces is the same class of failure as a dead store badge or a
+# broken install line: it looks like a way to reach someone and is not. This page carried
+# bjorn@minified.work for weeks precisely because twobots.dev had no MX yet.
+#
+# Checks the zone has MX, not that a mailbox exists — Google accepts every recipient at
+# RCPT and validates later, so a mailbox probe cannot tell a real address from a fake one.
+# MX is the part that is actually verifiable from here.
+ci_log "assert every published email domain can receive mail"
+for DOM in $(grep -oE 'mailto:[^"@]+@[a-zA-Z0-9.-]+' index.html | sed 's/.*@//' | sort -u || true); do
+  MX=$(dig +short MX "$DOM" 2>/dev/null | grep -c . || true)
+  [ "$MX" != "0" ] || ci_die "mailto: on the page uses @$DOM, which has NO MX records — mail to it bounces"
+  ci_log "can receive mail (correct): @$DOM — $MX MX record(s)"
+done
+
 # POSITIVE assertions. Every other check here is a negative grep; the page had none of
 # these, and doubling the copy is exactly when something load-bearing gets dropped in an
 # edit. minified.work has 157 assertions — this is the minimum equivalent.

@@ -93,4 +93,4 @@ Cookieless, self-hosted **GoatCounter** (`traffic.bjornbasar.com`), recording `l
 
 ## Contact
 
-The page shows `bjorn@minified.work`. The intended address is **`dev@twobots.dev`**, blocked on one thing: the `twobots.dev` zone has **no MX records**, so mail to it bounces today. Add Workspace MX (or a routing entry) to the zone, verify delivery, then change the single `mailto:` in `index.html` and the note in `content.md` — those are the only two places it appears.
+The page shows **`dev@twobots.dev`**, confirmed receiving since 2026-08-19. It was `bjorn@minified.work` until the zone had working MX — an address that bounces is worse than one that is merely off-brand. `ci/deploy.sh` asserts every `mailto:` domain on the page has MX records, so that cannot regress.

@@ -96,11 +96,17 @@ premature swap fails the deploy rather than shipping a 404 to three public sites
 
 ## Contact
 
-**Now:** `bjorn@minified.work` · **Intended:** `dev@twobots.dev`
+`dev@twobots.dev` — brand-matched, and confirmed receiving (a test message arrived
+2026-08-19).
 
-The zone has **no MX records**, so `@twobots.dev` bounces today. Add Workspace MX, verify
-delivery, then change the single `mailto:` in `index.html` and this file — the only two
-places it appears.
+It was `bjorn@minified.work` until then, because the zone had no MX and anything
+`@twobots.dev` bounced. Publishing an address that silently fails is worse than publishing
+one that works but is off-brand.
+
+**The swap touched three files, not the two this note used to claim** — `index.html`,
+this file, and `README.md`. Worth recording: a note that undercounts its own footprint is
+how the next person misses one. `ci/deploy.sh` now asserts that every `mailto:` domain on
+the page has MX records, so a bouncing address cannot be published again.
 
 ---
 
