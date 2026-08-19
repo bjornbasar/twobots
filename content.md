@@ -79,6 +79,19 @@ there to serve.
 command. Publishing it is a prerequisite for advertising it here, and the deploy gate
 enforces that automatically: the moment it resolves, the line can go in.
 
+**Documentation:** linked first on the karhu card, ahead of GitHub and Packagist — it is
+what a developer wants before either.
+
+It currently points at **`bjornbasar.github.io/karhu`** because that is the URL that
+*resolves*. The canonical home is **`framework.twobots.dev`** — `karhu/mkdocs.yml` already
+declares it as `site_url`, which is also what makes the Pages copy a non-competing DR
+mirror — but that host is still being built and 404s today. Advertising it early would be
+the dead-link failure the deploy gates exist to prevent.
+
+**Swapping it is one edit per site** (`twobots/index.html`, `minified/content.mjs`,
+`sloth/content.mjs`), and the twobots deploy **asserts the docs link returns 200**, so a
+premature swap fails the deploy rather than shipping a 404 to three public sites.
+
 **Support: GitHub Issues** on the relevant repo. Public on purpose.
 
 ## Contact

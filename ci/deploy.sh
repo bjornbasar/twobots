@@ -93,7 +93,10 @@ fi
 # fail on its own honesty note.
 ci_log "assert no signup CTA points at an app without a privacy policy"
 # Same no-match trap as above, and here the no-match case is the DESIRED state.
-CTA_HOSTS=$(grep -oE 'href="https://[a-z-]+\.minified\.work/(register|signup|sign-up)[^"]*"' index.html \
+# Matches BOTH zones. The apps migrated to *.twobots.dev (cards/budget/cookbook/hub) and
+# the old *.minified.work names now 301 across — so a minified-only pattern had gone blind:
+# a CTA to budget.twobots.dev/register would have sailed straight through the gate.
+CTA_HOSTS=$(grep -oE 'href="https://[a-z-]+\.(minified\.work|twobots\.dev)/(register|signup|sign-up)[^"]*"' index.html \
             | sed -E 's|href="https://([^/]+)/.*|\1|' | sort -u || true)
 if [ -z "$CTA_HOSTS" ]; then
   ci_log "no signup CTAs on the page (correct — the apps have no privacy policy yet)"
@@ -114,6 +117,20 @@ for URL in $(grep -oE 'https://github\.com/bjornbasar/[a-zA-Z0-9._-]+' index.htm
     ci_log "⚠ could not reach $URL — SKIPPING (transport failure)"; continue; }
   [ "$CODE" = "200" ] || ci_die "$URL returned $CODE — a linked repo is private or gone"
   ci_log "reachable (correct): $URL"
+done
+
+# The karhu documentation link. Its canonical home is framework.twobots.dev (declared in
+# karhu/mkdocs.yml) but that host is still being built, so the page currently points at the
+# GitHub Pages copy — the one that resolves. This gate is what makes the eventual swap safe:
+# point it anywhere, and the deploy proves the target answers before it ships. Same shape as
+# the Packagist gate — a definitive 4xx/5xx is fatal, a transport failure only warns.
+ci_log "assert the documentation link resolves"
+for URL in $(grep -oE 'href="https://(framework\.twobots\.dev|bjornbasar\.github\.io)/[^"]*"' index.html \
+             | sed -E 's/^href="//; s/"$//' | sort -u || true); do
+  CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL" 2>/dev/null) || {
+    ci_log "⚠ could not reach $URL — SKIPPING (transport failure)"; continue; }
+  [ "$CODE" = "200" ] || ci_die "the documentation link $URL returns $CODE — do not advertise docs that are not up yet"
+  ci_log "docs link resolves (correct): $URL"
 done
 
 # POSITIVE assertions. Every other check here is a negative grep; the page had none of
