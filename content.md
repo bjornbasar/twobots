@@ -33,7 +33,7 @@ is there because "you can play it right now" is the strongest thing the shelf ha
 ## For everyone — `#games`
 
 **Tongits TwoBots** — three-player [Tongits](https://en.wikipedia.org/wiki/Tong-its), you
-against two bots. Offline, no accounts, no ads.
+against two bots. Offline.
 
 **Status: publicly playable at [tongits.twobots.dev](https://tongits.twobots.dev/), not on any app store yet.**
 
