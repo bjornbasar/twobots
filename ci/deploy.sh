@@ -147,6 +147,23 @@ for DOM in $(grep -oE 'mailto:[^"@]+@[a-zA-Z0-9.-]+' index.html | sed 's/.*@//' 
   ci_log "can receive mail (correct): @$DOM — $MX MX record(s)"
 done
 
+# The legal pages are served by AYULA, not by this container — one file mounted at /terms/
+# and /privacy/ on twobots.dev and on every app subdomain, so each app's policy link is
+# same-origin. They are therefore invisible to the smoke tests below, which only see what
+# nginx-in-the-image serves. Check them where they actually live.
+#
+# The footer links them, so a broken mount would leave two dead links on the page, and the
+# apps would lose the policy they are legally required to show at the point of collection.
+ci_log "assert the shared Terms and Privacy Policy answer on every host that links them"
+for H in twobots.dev cards.twobots.dev budget.twobots.dev cookbook.twobots.dev hub.twobots.dev tongits.twobots.dev; do
+  for DOC in terms privacy; do
+    CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://$H/$DOC/" 2>/dev/null) || {
+      ci_log "⚠ could not reach https://$H/$DOC/ — SKIPPING (transport failure)"; continue; }
+    [ "$CODE" = "200" ] || ci_die "https://$H/$DOC/ returns $CODE — the Ayula mount is broken"
+  done
+  ci_log "legal pages served (correct): $H"
+done
+
 # POSITIVE assertions. Every other check here is a negative grep; the page had none of
 # these, and doubling the copy is exactly when something load-bearing gets dropped in an
 # edit. minified.work has 157 assertions — this is the minimum equivalent.

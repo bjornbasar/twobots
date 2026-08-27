@@ -124,7 +124,10 @@ the page has MX records, so a bouncing address cannot be published again.
   done, so a shot could misrepresent the polish in either direction.
 - **No ratings, download counts or launch date.** Nothing to count; a date would be a guess.
 - **No "we".** It is one person, and the page says so.
-- **No privacy policy.** Deliberate and tracked — see below.
+- ~~**No privacy policy.**~~ *(Spent 2026-08-19.)* Both a shared **Terms of Use** and a
+  **Privacy Policy** now serve at `/terms/` and `/privacy/` on twobots.dev **and on every
+  app subdomain**, so each app's link to them is same-origin. Base documents, annexed per
+  app: an app's additional terms prevail over the base to the extent of any inconsistency.
 - **`mishka` is not on the shelf** even though its repo is public and minified.work calls
   it the framework's flagship proof. It is a family-hub app for one household, not
   something to install. The page says so, because its absence would otherwise look like an
@@ -132,10 +135,16 @@ the page has MX records, so a bouncing address cannot be published again.
 
 ## Two things that must not quietly land here
 
-**The app's privacy/support page belongs OFF-FLEET on Cloudflare Pages** (`karu/DOCS.md`).
-Google requires a non-geofenced, non-editable, non-PDF URL plus an in-app link, and such a
-URL 502-ing during review is a rejection — on a Pi behind a residential line. This page is
-marketing, so an outage costs a visitor rather than a submission.
+**The STORE-FACING privacy URL still belongs off-fleet** (`karu/DOCS.md`). What now exists at
+`/privacy/` is served by **Ayula itself** — a static file in `/var/www`, one hop less fragile
+than the app containers, and it unblocks the thing the apps actually needed today: a
+same-origin policy link at the point of collection.
+
+That is **not** the same as a store-mandated URL. Google requires a non-geofenced,
+non-editable, non-PDF URL plus an in-app link, and one 502-ing during review is a rejection —
+on a Pi behind a residential line. **Before the first Play submission**, either mirror these
+two documents to Cloudflare Pages and point the listing there, or move the apex. Decide it
+then; do not let today's mount quietly become the store answer by default.
 
 **The PWA's public URL is load-bearing, not marketing.** `karu/ANDROID.md` makes Android a
 **TWA** — the app *is* the deployed website — with `assetlinks.json` required at that
