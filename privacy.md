@@ -75,12 +75,12 @@ page or endpoint requested, the HTTP status, your browser's user-agent, and the 
 your browser sends one. This is ordinary web-server logging, and it is how the service is operated
 and defended.
 
-**Analytics — on the game only.** [tongits.twobots.dev](https://tongits.twobots.dev/) loads
-**GoatCounter**, which we host ourselves. It is **cookieless**, does not follow you between sites,
-and per its documentation does not store your IP address — it uses a short-lived salted hash to
-recognise repeat views within a session. It records the page path, referring URL, page title, screen
-width, and derives an approximate country and your browser and operating system from the request.
-**The other apps have no analytics at all.**
+**Analytics — on the games only.** [tongits.twobots.dev](https://tongits.twobots.dev/) and
+[pusoy.twobots.dev](https://pusoy.twobots.dev/) load **GoatCounter**, which we host ourselves. It is
+**cookieless**, does not follow you between sites, and per its documentation does not store your IP
+address — it uses a short-lived salted hash to recognise repeat views within a session. It records
+the page path, referring URL, page title, screen width, and derives an approximate country and your
+browser and operating system from the request. **The other apps have no analytics at all.**
 
 **Push notification subscriptions.** Where an app offers push reminders and you turn them on, your
 browser gives us a subscription endpoint, which we store so we can send them. Turning notifications
@@ -108,7 +108,7 @@ keep a record.
 | Account information | To let you sign in, to keep your data yours, and to contact you about your account |
 | Your content | To provide the app — it is the thing the app exists to hold |
 | Technical logs | To operate the service, diagnose faults, and defend against abuse |
-| Analytics (game only) | To know roughly how many people played, and from where |
+| Analytics (games only) | To know roughly how many people played, and from where |
 | Push subscriptions | To send only the notifications you asked for |
 | Email correspondence | To reply, and to keep a record |
 
@@ -135,7 +135,7 @@ The marketing page at [twobots.dev](https://twobots.dev/) sets **no cookies of i
 |---|---|
 | Your account and content | Until you delete it, or ask us to |
 | Technical logs | **14 days**, then deleted — they rotate daily |
-| Analytics (game only) | Aggregate counts, kept indefinitely; not linked to an identified person |
+| Analytics (games only) | Aggregate counts, kept indefinitely; not linked to an identified person |
 | Push subscriptions | Until you turn notifications off or the subscription expires |
 | Email correspondence | While it remains relevant, then deleted |
 | Backups | Backups are taken for operational purposes and expire on their normal cycle. Deleted content can persist in a backup until it does |
@@ -209,7 +209,7 @@ practicable and within **20 working days**, as the Act requires. There is no cha
 
 **A practical limit worth knowing.** Technical logs are keyed to IP addresses, not to people. Unless
 you can tell us the IP address and roughly when you visited, we usually cannot find those records or
-confirm they are yours — and they are deleted after 14 days regardless. Analytics on the game is
+confirm they are yours — and they are deleted after 14 days regardless. Analytics on the games is
 aggregate and not linked to an identified person. That is a consequence of collecting as little as
 we do, not a refusal to help. Your account and its content are a different matter: those we can find
 and hand over.
@@ -229,7 +229,7 @@ email us and we will delete it.
 
 ## 13. Do Not Track and Global Privacy Control
 
-A straight answer rather than a claimed courtesy: **technical logs and the game's analytics do not
+A straight answer rather than a claimed courtesy: **technical logs and the games' analytics do not
 change based on a Do Not Track or Global Privacy Control signal.** Logging happens before any such
 preference could be read, and the analytics script does not check for them.
 

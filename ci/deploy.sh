@@ -155,13 +155,24 @@ done
 # The footer links them, so a broken mount would leave two dead links on the page, and the
 # apps would lose the policy they are legally required to show at the point of collection.
 ci_log "assert the shared Terms and Privacy Policy answer on every host that links them"
-for H in twobots.dev cards.twobots.dev budget.twobots.dev cookbook.twobots.dev hub.twobots.dev tongits.twobots.dev; do
+for H in twobots.dev cards.twobots.dev budget.twobots.dev cookbook.twobots.dev hub.twobots.dev tongits.twobots.dev pusoy.twobots.dev; do
   for DOC in terms privacy; do
     CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://$H/$DOC/" 2>/dev/null) || {
       ci_log "⚠ could not reach https://$H/$DOC/ — SKIPPING (transport failure)"; continue; }
     [ "$CODE" = "200" ] || ci_die "https://$H/$DOC/ returns $CODE — the Ayula mount is broken"
   done
   ci_log "legal pages served (correct): $H"
+done
+
+# Same shape, one document instead of two: each app's own privacy annex, additional to the
+# base policy above and specific to that app (twobots.dev itself has no annex — it is not an
+# app with its own accounts or data). Also served by Ayula, not this container — see above.
+ci_log "assert each app's own privacy annex answers on its own host"
+for H in cards.twobots.dev budget.twobots.dev cookbook.twobots.dev hub.twobots.dev tongits.twobots.dev pusoy.twobots.dev; do
+  CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://$H/privacy-annex/" 2>/dev/null) || {
+    ci_log "⚠ could not reach https://$H/privacy-annex/ — SKIPPING (transport failure)"; continue; }
+  [ "$CODE" = "200" ] || ci_die "https://$H/privacy-annex/ returns $CODE — the Ayula mount is broken"
+  ci_log "privacy annex served (correct): $H"
 done
 
 # POSITIVE assertions. Every other check here is a negative grep; the page had none of
