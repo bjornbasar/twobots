@@ -125,14 +125,27 @@ done
 # point it anywhere, and the deploy proves the target answers before it ships. Same shape as
 # the Packagist gate — a definitive 4xx/5xx is fatal, a transport failure only warns.
 ci_log "assert the documentation link resolves"
-for URL in $(grep -oE 'href="https://(framework\.twobots\.dev|bjornbasar\.github\.io)/[^"]*"' index.html \
+# ⚠ docs.twobots.dev, NOT framework.twobots.dev. The karhu documentation moved on
+# 2026-08-31 when the estate's docs consolidated onto one host per audience, and
+# framework.twobots.dev became a permanent 301 to docs.twobots.dev/karhu/.
+#
+# THIS ASSERTION IS WHY THAT WAS CAUGHT. It requires a 200, a 301 is not a 200, and the first
+# twobots deploy after the move failed right here — correctly. Advertising a URL that
+# redirects is advertising the wrong URL: it costs every visitor a round trip and it breaks
+# outright the day the shim is retired.
+for URL in $(grep -oE 'href="https://(docs\.twobots\.dev|bjornbasar\.github\.io)/[^"]*"' index.html \
              | sed -E 's/^href="//; s/"$//' | sort -u || true); do
   CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$URL" 2>/dev/null) || {
     ci_log "⚠ could not reach $URL — SKIPPING (transport failure)"; continue; }
   [ "$CODE" = "200" ] || ci_die "the documentation link $URL returns $CODE — do not advertise docs that are not up yet"
-  ci_log "docs link resolves (correct): $URL"
+  ci_log "documentation link resolves (correct): $URL → 200"
 done
 
+# The reverse direction, for the same reason the analytics guard has one: a URL that only
+# redirects must not be advertised, and the loop above cannot see a host it no longer matches.
+if grep -qF 'framework.twobots.dev' index.html; then
+  ci_die "index.html still advertises framework.twobots.dev — it is a 301 now; link docs.twobots.dev/karhu/ instead"
+fi
 # A published address that bounces is the same class of failure as a dead store badge or a
 # broken install line: it looks like a way to reach someone and is not. This page carried
 # bjorn@minified.work for weeks precisely because twobots.dev had no MX yet.
