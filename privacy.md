@@ -63,7 +63,9 @@ The rest of this page is the detail behind those four sentences.
 
 **Account information.** Where an app has accounts: your email address, a password, and a display
 name if the app uses one. **We never store your password itself** — only a one-way hash of it (see
-section 10).
+section 10). Some apps instead let you sign in with your Google Account: if you choose that, Google
+tells us your email address and an account identifier, and we never see or store your Google
+password at all.
 
 **The content you put in.** This is most of what the apps hold, and it differs by app — recipes,
 a card collection and decks, budget categories and transactions, a household's calendar, chores and
@@ -148,6 +150,12 @@ policy.
 
 **Postmark** — sends transactional email for us (sign-in, address confirmations, security alerts).
 It receives your email address and the content of those messages.
+
+**Google** — where an app offers "Sign in with Google", your browser talks to Google directly to
+approve it; Google then tells us your email address and an account identifier. We never receive or
+see your Google password, and request nothing beyond your name and email (no access to your Drive,
+Calendar, Contacts, or anything else in your Google Account). You can revoke this access any time
+from your Google Account's [connected apps settings](https://myaccount.google.com/permissions).
 
 **Push services** — where you enable push notifications, delivery goes through the push service your
 browser uses, typically **Google's Firebase Cloud Messaging**, **Mozilla**, or **Apple**, depending
