@@ -228,6 +228,24 @@ if ssh "$HURSKA" "curl -s http://localhost:$PORT/ | grep -qiE 'play\\.google\\.c
 fi
 ci_log "no store badge or link served (correct)"
 
+# ⚠ THE ANALYTICS HOST. GoatCounter moved otso.minified.work → traffic.bjornbasar.com on
+# 2026-08-18, and THIS page was the last in the estate still hardcoding the old name — for a
+# fortnight, undetected, because the 301 shim forwards both the script and the beacon with the
+# query intact. It kept working, so nothing complained.
+#
+# andarta and karu have had this exact assertion since the rename; twobots did not, which is
+# precisely why twobots is the one that rotted. A shim that works is the most dangerous kind
+# of stale reference: it survives until someone removes the shim, and then analytics on the
+# flagship landing page stops with no error anywhere.
+ci_log "assert the analytics beacon points at the current host"
+if ssh "$HURSKA" "curl -s http://localhost:$PORT/ | grep -qF 'otso.minified.work'"; then
+  ci_die "the page points at otso.minified.work — the analytics host is traffic.bjornbasar.com"
+fi
+if ! ssh "$HURSKA" "curl -s http://localhost:$PORT/ | grep -qF 'traffic.bjornbasar.com/count.js'"; then
+  ci_die "no traffic.bjornbasar.com beacon found — the GoatCounter embed is missing or altered"
+fi
+ci_log "analytics host is correct"
+
 # No phone numbers on any static site (policy, 2026-08-07).
 ci_log "assert no phone number is served"
 if ssh "$HURSKA" "curl -s http://localhost:$PORT/ | grep -qE '\\+?64[ -]?[0-9][0-9 ()-]{7,}|\\b0[27][0-9]{7,9}\\b'"; then
