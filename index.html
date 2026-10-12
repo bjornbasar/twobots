@@ -46,6 +46,7 @@
   A linked stylesheet resolves url() against itself, so `assets/fonts/…` would resolve to
   /assets/assets/fonts/… and 404 — the bug diana-cv shipped with for months.
 -->
+<script>(function(){var r=document.documentElement;r.dataset.js='1';try{var t=localStorage.getItem('tb-theme');if(t==='light'||t==='dark')r.dataset.theme=t;}catch(e){}})();</script>
 <style>
   /* ---------------------------------------------------------------------------
      Palette — Izzet (U/R). Blue for the bots, red for play; Izzet is also MTG's
@@ -97,6 +98,20 @@
       --pip-wash: #23201C;
     }
   }
+
+  :root[data-theme="light"] {
+    --bg: #FDF4EE; --surface: #FFFFFF; --text: #2A1D17; --muted: #7A6055; --border: #E0D8CE;
+    --ink: #275E8C; --ink-strong: #1C4A72; --pip: #D06B22; --pip-wash: #FBEEE3;
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171A; --surface: #1C2126; --text: #ECEFF2; --muted: #9EAAB4; --border: #2C333A;
+    --ink: #7FB2DC; --ink-strong: #A2CBEC; --pip: #E8894A; --pip-wash: #23201C;
+  }
+  .themetoggle { display: none; background: none; border: 1px solid var(--border); border-radius: 8px;
+    color: var(--muted); cursor: pointer; font: inherit; font-size: .95rem;
+    line-height: 1; padding: .45rem .55rem; }
+  .themetoggle:hover { color: var(--ink); border-color: currentColor; }
+  [data-js="1"] .themetoggle { display: inline-block; }
 
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -250,6 +265,7 @@
     <div class="inventory">
       <p><strong>What's here right now:</strong> four apps you can self-host or ask me about, four MIT-licensed PHP packages you can install today, and one card game you can play in your browser this minute — though not on any app store yet. That is the whole shelf — stated up front rather than at the bottom.</p>
     </div>
+    <button class="themetoggle" id="theme" type="button" aria-label="Switch to dark theme">☾</button>
   </div>
 </header>
 
@@ -369,6 +385,15 @@
 
 </main>
 
+<script>(function(){
+  var root=document.documentElement,btn=document.getElementById('theme');
+  if(!btn)return;
+  var KEY='tb-theme';
+  var dark=function(){return root.dataset.theme?root.dataset.theme==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;};
+  var paint=function(){btn.textContent=dark()?'☀':'☾';btn.setAttribute('aria-label',dark()?'Switch to light theme':'Switch to dark theme');};
+  btn.addEventListener('click',function(){var n=dark()?'light':'dark';root.dataset.theme=n;try{localStorage.setItem(KEY,n);}catch(e){}paint();});
+  paint();
+})();</script>
 <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
 
 <!--
