@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# twobots local CI/CD deploy — builds MULTI-ARCH (amd64 + arm64 for Hurska), pushes the
-# local registry (:latest + :sha- for rollback), redeploys Hurska, smoke-tests.
+# twobots local CI/CD deploy — builds MULTI-ARCH (amd64 + arm64, legacy of when this
+# ran on arm64 Hurska), pushes the local registry (:latest + :sha- for rollback),
+# redeploys Bosco, smoke-tests.
 #
 # No render step: the page is hand-authored static HTML. The image COPY list is an
 # allowlist (see Dockerfile) so the provenance files are never served.
@@ -9,12 +10,12 @@
 set -euo pipefail
 source "${CI_LIB:-/data/git/ci-lib.sh}"
 
-HURSKA="ubuntu@192.168.4.33"
-HURSKA_DIR="/data/twobots"
+BOSCO="ubuntu@192.168.4.34"
+BOSCO_DIR="/data/twobots"
 IMG="$REGISTRY/twobots"
 PORT=8098
 
-ci_trap "→ Hurska (twobots.dev)"
+ci_trap "→ Bosco (twobots.dev)"
 ci_lock
 ci_ensure_buildx
 
@@ -25,7 +26,7 @@ ci_log "assert cached assets carry a current cache-buster"
 ci_assert_cache_busted index.html
 
 # ---------------------------------------------------------------- pre-deploy gates
-# These run on RUXA against the built index.html, not via `ssh $HURSKA curl` like the
+# These run on RUXA against the built index.html, not via `ssh $BOSCO curl` like the
 # smoke tests below. A Packagist lookup has nothing to do with what nginx serves, and a
 # broken install line should fail BEFORE a multi-arch image is built and pushed.
 
@@ -209,16 +210,16 @@ ci_log "build + push multi-arch: $IMG (:latest + :sha-$CI_SHA)"
 docker buildx build --builder multiarch --platform linux/amd64,linux/arm64 \
   -t "$IMG:latest" -t "$IMG:sha-$CI_SHA" --push .
 
-ci_log "sync compose + redeploy on Hurska"
-rsync -a docker-compose.yml "$HURSKA:$HURSKA_DIR/"
-ssh "$HURSKA" "cd $HURSKA_DIR && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f"
+ci_log "sync compose + redeploy on Bosco"
+rsync -a docker-compose.yml "$BOSCO:$BOSCO_DIR/"
+ssh "$BOSCO" "cd $BOSCO_DIR && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f"
 
 # Smoke-test the page AND that the provenance files are absent — a regression in the
 # Dockerfile's allowlist would otherwise publish them silently.
 ci_log "smoke-test the deployed container"
-ssh "$HURSKA" "curl -sf -o /dev/null -w 'twobots / → HTTP %{http_code}\n' http://localhost:$PORT/"
+ssh "$BOSCO" "curl -sf -o /dev/null -w 'twobots / → HTTP %{http_code}\n' http://localhost:$PORT/"
 for LEAK in /content.md /README.md /Dockerfile; do
-  CODE=$(ssh "$HURSKA" "curl -s -o /dev/null -w '%{http_code}' http://localhost:$PORT$LEAK")
+  CODE=$(ssh "$BOSCO" "curl -s -o /dev/null -w '%{http_code}' http://localhost:$PORT$LEAK")
   [ "$CODE" = "404" ] || ci_die "provenance file $LEAK is being SERVED (HTTP $CODE) — check the Dockerfile COPY allowlist"
   ci_log "not served (correct): $LEAK → 404"
 done
@@ -227,7 +228,7 @@ done
 # whose url()s were document-relative, so every face 404'd and the page silently fell
 # back to system fonts — invisible unless you look for it.
 ci_log "assert the self-hosted fonts resolve"
-CODE=$(ssh "$HURSKA" "curl -s -o /dev/null -w '%{http_code}' http://localhost:$PORT/assets/fonts/oswald-400-latin.woff2")
+CODE=$(ssh "$BOSCO" "curl -s -o /dev/null -w '%{http_code}' http://localhost:$PORT/assets/fonts/oswald-400-latin.woff2")
 [ "$CODE" = "200" ] || ci_die "oswald-400-latin.woff2 → HTTP $CODE — the fonts are NOT loading, check fonts.css url() paths"
 ci_log "fonts resolve (correct): oswald-400-latin.woff2 → 200"
 
@@ -236,7 +237,7 @@ ci_log "fonts resolve (correct): oswald-400-latin.woff2 → 200"
 # exactly the sort of thing that gets pasted in "ready for launch" and forgotten. When
 # there IS a listing, delete this block in the same commit that adds the link.
 ci_log "assert no store badge or store link is served (nothing is published yet)"
-if ssh "$HURSKA" "curl -s http://localhost:$PORT/ | grep -qiE 'play\\.google\\.com|apps\\.apple\\.com|app-?store|google-?play|GetItOnGooglePlay'"; then
+if ssh "$BOSCO" "curl -s http://localhost:$PORT/ | grep -qiE 'play\\.google\\.com|apps\\.apple\\.com|app-?store|google-?play|GetItOnGooglePlay'"; then
   ci_die "a STORE LINK OR BADGE is being served — there is no listing behind it yet (see content.md)"
 fi
 ci_log "no store badge or link served (correct)"
@@ -251,17 +252,17 @@ ci_log "no store badge or link served (correct)"
 # of stale reference: it survives until someone removes the shim, and then analytics on the
 # flagship landing page stops with no error anywhere.
 ci_log "assert the analytics beacon points at the current host"
-if ssh "$HURSKA" "curl -s http://localhost:$PORT/ | grep -qF 'otso.minified.work'"; then
+if ssh "$BOSCO" "curl -s http://localhost:$PORT/ | grep -qF 'otso.minified.work'"; then
   ci_die "the page points at otso.minified.work — the analytics host is traffic.bjornbasar.com"
 fi
-if ! ssh "$HURSKA" "curl -s http://localhost:$PORT/ | grep -qF 'traffic.bjornbasar.com/count.js'"; then
+if ! ssh "$BOSCO" "curl -s http://localhost:$PORT/ | grep -qF 'traffic.bjornbasar.com/count.js'"; then
   ci_die "no traffic.bjornbasar.com beacon found — the GoatCounter embed is missing or altered"
 fi
 ci_log "analytics host is correct"
 
 # No phone numbers on any static site (policy, 2026-08-07).
 ci_log "assert no phone number is served"
-if ssh "$HURSKA" "curl -s http://localhost:$PORT/ | grep -qE '\\+?64[ -]?[0-9][0-9 ()-]{7,}|\\b0[27][0-9]{7,9}\\b'"; then
+if ssh "$BOSCO" "curl -s http://localhost:$PORT/ | grep -qE '\\+?64[ -]?[0-9][0-9 ()-]{7,}|\\b0[27][0-9]{7,9}\\b'"; then
   ci_die "a PHONE NUMBER is being served — phone numbers are stripped from all statics"
 fi
 ci_log "no phone number served (correct)"
