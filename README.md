@@ -51,13 +51,13 @@ Two things inherited as scar tissue from `diana-cv`:
 
 ## Hosting and deploy
 
-`nginx:alpine` on **Hurska** (Pi, arm64) at `:8098`, reverse-proxied by **Ayula** as `https://twobots.dev` and `https://www.twobots.dev` (`twobots.dev` Cloudflare Origin cert). Ayula intercepts 404s and serves the branded twobots.dev page via `@e404_2bot`.
+`nginx:alpine` on **Bosco** (x86_64, moved off Hurska 2026-10-23) at `:8098`, reverse-proxied by **Ayula** as `https://twobots.dev` and `https://www.twobots.dev` (`twobots.dev` Cloudflare Origin cert). Ayula intercepts 404s and serves the branded twobots.dev page via `@e404_2bot`.
 
 ```bash
 git push ruxa main     # → post-receive on Ruxa → ci/deploy.sh
 ```
 
-Build → multi-arch image → local registry `192.168.4.9:5000` (`:latest` + `:sha-<short>`) → redeploy Hurska → smoke-test → best-effort ghcr copy. Rollback = repin the compose `image:` to a prior `:sha-`.
+Build → multi-arch image → local registry `192.168.4.9:5000` (`:latest` + `:sha-<short>`) → redeploy Bosco → smoke-test → best-effort ghcr copy. Rollback = repin the compose `image:` to a prior `:sha-`.
 
 **The vhost was the whole cutover.** `twobots.dev`'s wildcard already resolved to Ayula (apex, `www` and any subdomain all returned **520** — CF's report of Ayula's `default` server firing `return 444`), and the CF Origin cert pair was already installed. No Cloudflare DNS change was needed.
 

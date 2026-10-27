@@ -149,4 +149,4 @@ then; do not let today's mount quietly become the store answer by default.
 **The PWA's public URL is load-bearing, not marketing.** `karu/ANDROID.md` makes Android a
 **TWA** — the app *is* the deployed website — with `assetlinks.json` required at that
 origin's root, for package `dev.twobots.tongits`. So where the web build is hosted decides
-whether `twobots.dev`'s apex can stay on Hurska. **Decide before M3, not after.**
+whether `twobots.dev`'s apex can stay on Bosco (moved off Hurska 2026-10-23). **Decide before M3, not after.**
