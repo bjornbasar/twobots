@@ -6,7 +6,7 @@
 # No render step: the page is hand-authored static HTML. The image COPY list is an
 # allowlist (see Dockerfile) so the provenance files are never served.
 #
-# Runs on Ruxa via `git push ruxa main` (post-receive) or by hand from the checkout.
+# Runs on Ruxa via `git push den main` (post-receive) or by hand from the checkout.
 set -euo pipefail
 source "${CI_LIB:-/data/git/ci-lib.sh}"
 

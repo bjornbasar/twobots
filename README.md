@@ -54,7 +54,7 @@ Two things inherited as scar tissue from `diana-cv`:
 `nginx:alpine` on **Bosco** (x86_64, moved off Hurska 2026-10-23) at `:8098`, reverse-proxied by **Ayula** as `https://twobots.dev` and `https://www.twobots.dev` (`twobots.dev` Cloudflare Origin cert). Ayula intercepts 404s and serves the branded twobots.dev page via `@e404_2bot`.
 
 ```bash
-git push ruxa main     # → post-receive on Ruxa → ci/deploy.sh
+git push den main     # → post-receive on Ruxa → ci/deploy.sh
 ```
 
 Build → multi-arch image → local registry `192.168.4.9:5000` (`:latest` + `:sha-<short>`) → redeploy Bosco → smoke-test → best-effort ghcr copy. Rollback = repin the compose `image:` to a prior `:sha-`.
