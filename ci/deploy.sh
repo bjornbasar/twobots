@@ -207,30 +207,20 @@ do
 done
 
 ci_log "build + push multi-arch: $IMG (:latest + :sha-$CI_SHA)"
-docker buildx build --builder multiarch --platform linux/amd64,linux/arm64 \
-  -t "$IMG:latest" -t "$IMG:sha-$CI_SHA" --push .
+ci_buildx_push "$IMG"
 
-ci_log "sync compose + redeploy on Bosco"
-rsync -a docker-compose.yml "$BOSCO:$BOSCO_DIR/"
-ssh "$BOSCO" "cd $BOSCO_DIR && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f"
+ci_sync_and_redeploy "$BOSCO" "$BOSCO_DIR" Bosco
 
 # Smoke-test the page AND that the provenance files are absent — a regression in the
 # Dockerfile's allowlist would otherwise publish them silently.
 ci_log "smoke-test the deployed container"
 ssh "$BOSCO" "curl -sf -o /dev/null -w 'twobots / → HTTP %{http_code}\n' http://localhost:$PORT/"
-for LEAK in /content.md /README.md /Dockerfile; do
-  CODE=$(ssh "$BOSCO" "curl -s -o /dev/null -w '%{http_code}' http://localhost:$PORT$LEAK")
-  [ "$CODE" = "404" ] || ci_die "provenance file $LEAK is being SERVED (HTTP $CODE) — check the Dockerfile COPY allowlist"
-  ci_log "not served (correct): $LEAK → 404"
-done
+ci_assert_not_served "$BOSCO" "$PORT" /content.md /README.md /Dockerfile
 
 # The self-hosted fonts must actually resolve. diana-cv shipped with a LINKED fonts.css
 # whose url()s were document-relative, so every face 404'd and the page silently fell
 # back to system fonts — invisible unless you look for it.
-ci_log "assert the self-hosted fonts resolve"
-CODE=$(ssh "$BOSCO" "curl -s -o /dev/null -w '%{http_code}' http://localhost:$PORT/assets/fonts/oswald-400-latin.woff2")
-[ "$CODE" = "200" ] || ci_die "oswald-400-latin.woff2 → HTTP $CODE — the fonts are NOT loading, check fonts.css url() paths"
-ci_log "fonts resolve (correct): oswald-400-latin.woff2 → 200"
+ci_assert_font_resolves "$BOSCO" "$PORT" /assets/fonts/oswald-400-latin.woff2
 
 # THE HONESTY GATE, specific to this page. Nothing is published to any store yet, so a
 # store badge or link would point nowhere — it reads as broken or dishonest, and it is
@@ -261,15 +251,8 @@ fi
 ci_log "analytics host is correct"
 
 # No phone numbers on any static site (policy, 2026-08-07).
-ci_log "assert no phone number is served"
-if ssh "$BOSCO" "curl -s http://localhost:$PORT/ | grep -qE '\\+?64[ -]?[0-9][0-9 ()-]{7,}|\\b0[27][0-9]{7,9}\\b'"; then
-  ci_die "a PHONE NUMBER is being served — phone numbers are stripped from all statics"
-fi
-ci_log "no phone number served (correct)"
+ci_assert_no_phone_number "$BOSCO" "$PORT"
 
 # Best-effort ghcr copy. PUBLIC: unlike diana-cv/mrs-peopsquik this repo holds no
 # third-party personal data, and a store publisher's site is reasonable to have open.
-ci_log "ghcr copy (best-effort)"
-docker buildx build --builder multiarch --platform linux/amd64,linux/arm64 \
-  -t "$GHCR_NS/twobots:latest" --push . \
-  || ci_log "⚠ ghcr copy failed (non-fatal; deploy already done)"
+ci_ghcr_copy_best_effort twobots
