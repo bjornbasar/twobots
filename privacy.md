@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Effective:** 19 August 2026 · **Last updated:** 19 August 2026
+**Effective:** 19 August 2026 · **Last updated:** 11 November 2026
 
 This policy explains what personal information **[twobots.dev](https://twobots.dev/)** and the apps
 and games published there (each an "app", together the "apps") collect, why, and what you can do
@@ -88,6 +88,13 @@ browser and operating system from the request. **The other apps have no analytic
 browser gives us a subscription endpoint, which we store so we can send them. Turning notifications
 off, or removing the app from your browser, ends it.
 
+**Feedback and bug reports.** Where an app has an in-app "report a problem" form, sending one is
+**entirely your choice** — nothing is sent automatically. A report carries your note, an optional
+contact detail if you choose to leave one, basic device diagnostics (screen size, browser), and —
+for apps whose match or session is replayable — the current record so we can reproduce what you
+saw. Reports go to a shared inbox we monitor; that app's additional privacy terms give the exact
+detail of what it sends.
+
 **Anything you email us.** If you write to us, we keep your message and address so we can reply and
 keep a record.
 
@@ -112,6 +119,7 @@ keep a record.
 | Technical logs | To operate the service, diagnose faults, and defend against abuse |
 | Analytics (games only) | To know roughly how many people played, and from where |
 | Push subscriptions | To send only the notifications you asked for |
+| Feedback reports (where an app has a form) | To reproduce and fix what you reported |
 | Email correspondence | To reply, and to keep a record |
 
 We do not use your content to train machine-learning models.
@@ -139,6 +147,7 @@ The marketing page at [twobots.dev](https://twobots.dev/) sets **no cookies of i
 | Technical logs | **14 days**, then deleted — they rotate daily |
 | Analytics (games only) | Aggregate counts, kept indefinitely; not linked to an identified person |
 | Push subscriptions | Until you turn notifications off or the subscription expires |
+| Feedback reports (where an app has a form) | Kept in our shared inbox for as long as useful to investigate; no automatic expiry today |
 | Email correspondence | While it remains relevant, then deleted |
 | Backups | Backups are taken for operational purposes and expire on their normal cycle. Deleted content can persist in a backup until it does |
 
@@ -160,6 +169,9 @@ from your Google Account's [connected apps settings](https://myaccount.google.co
 **Push services** — where you enable push notifications, delivery goes through the push service your
 browser uses, typically **Google's Firebase Cloud Messaging**, **Mozilla**, or **Apple**, depending
 on your browser. They handle the delivery, not the content of your account.
+
+**Slack** — where an app has a feedback form, a submitted report is relayed into a Slack channel we
+monitor so we can respond quickly. Slack hosts that message under its own policy.
 
 **Scryfall** — the card-collection app fetches public card data and images from Scryfall so it can
 show them. It is a lookup of public information; your collection is not sent there.
